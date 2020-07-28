@@ -11,8 +11,8 @@ url = "https://covid-193.p.rapidapi.com/statistics"
 
 
 headers = {
-    'x-rapidapi-host': "api host",
-    'x-rapidapi-key': "api key"
+    'x-rapidapi-host': "",
+    'x-rapidapi-key': ""
     }
 
 
@@ -66,7 +66,7 @@ class ReviewSelectionDialog(ComponentDialog):
         ChoicePrompt.__name__,
         PromptOptions(
             prompt=MessageFactory.text("Please indicate what do you want to know, or choose done to exit."),
-            choices=[Choice("Covid-19 Cases"), Choice("Covid-19 Deaths"), Choice("Country Demographics"), Choice("Done")],
+            choices=[Choice("Covid-19 Cases"), Choice("Covid-19 Deaths"), Choice("Covid-19 Tests"), Choice("Done")],
         ),
     )
        
@@ -95,6 +95,46 @@ class ReviewSelectionDialog(ComponentDialog):
                     f"Recovered Cases {recovered_cases} \n\n"
                     )
                 )   
+        
+        if step_context.result.value == 'Covid-19 Deaths':
+            await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
+
+            querystring = {"country":"{}".format(country)}
+            response = requests.request("GET", url, headers=headers, params=querystring)
+            response_json = json.loads(response.text)
+
+            new_deaths = response_json['response'][0]['deaths']['new']
+            m_deaths = response_json['response'][0]['deaths']['1M_pop']
+            total_deaths = response_json['response'][0]['deaths']['total']
+
+            await step_context.context.send_activity(
+                MessageFactory.text(
+                    f"COVID-19 Deaths from {country} \n\n"
+                    f"New Deaths {new_deaths} \n\n"
+                    f"1M_pop Deaths {m_deaths} \n\n"
+                    f"Total Deaths {total_deaths} \n\n"
+                    )
+                )   
+        
+        if step_context.result.value == 'Covid-19 Tests':
+            await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
+
+            querystring = {"country":"{}".format(country)}
+            response = requests.request("GET", url, headers=headers, params=querystring)
+            response_json = json.loads(response.text)
+
+            m_tests = response_json['response'][0]['tests']['1M_pop']
+            total_tests = response_json['response'][0]['tests']['total']
+
+            await step_context.context.send_activity(
+                MessageFactory.text(
+                    f"COVID-19 PCR Tests from {country} \n\n"
+                    f"New Tests {m_tests} \n\n"
+                    f"Total PCR Tests {total_tests} \n\n"
+                    )
+                )  
+
+
 
         # If they're done, exit and return their list.
         if step_context.result.value == 'Done':
