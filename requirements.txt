@@ -1,2 +1,4 @@
 botbuilder-integration-aiohttp>=4.9.1
 botbuilder-dialogs>=4.9.1
+tweepy
+requests

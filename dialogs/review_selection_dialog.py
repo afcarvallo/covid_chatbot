@@ -3,11 +3,23 @@
 
 import requests
 import json
+import tweepy
+from collections import Counter 
+
+## tweepy authentication
+access_token = ""
+access_token_secret = ""
+consumer_key = ""
+consumer_secret = ""
+
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+
+api = tweepy.API(auth)
 
 # ENDPOINT COVID 
-# https://rapidapi.com/api-sports/api/covid-193/endpoints
-
 url = "https://covid-193.p.rapidapi.com/statistics"
+
 
 
 headers = {
@@ -66,7 +78,7 @@ class ReviewSelectionDialog(ComponentDialog):
         ChoicePrompt.__name__,
         PromptOptions(
             prompt=MessageFactory.text("Please indicate what do you want to know, or choose done to exit."),
-            choices=[Choice("Covid-19 Cases"), Choice("Covid-19 Deaths"), Choice("Covid-19 Tests"), Choice("Done")],
+            choices=[Choice("Covid-19 Cases"), Choice("Covid-19 Deaths"), Choice("Covid-19 Tests"), Choice('Covid-19 Twitter') ,Choice("Done")],
         ),
     )
        
@@ -134,6 +146,27 @@ class ReviewSelectionDialog(ComponentDialog):
                     )
                 )  
 
+        if step_context.result.value == 'Covid-19 Twitter':
+            
+            await step_context.context.send_activity(MessageFactory.text("Obtaining last tweets in your country related to COVID-19 wait a moment..."))
+
+            result = []
+
+            query = f'{country} AND covid OR covid-19 OR coronavirus OR Covid-19'
+
+            for tweet in tweepy.Cursor(api.search, q=query).items(5):
+                result.append(tweet.text)
+
+            await step_context.context.send_activity(
+                MessageFactory.text(
+                    f"COVID-19 Tweets from {country} \n\n"
+                    f"{result[0]} \n\n"
+                    f"{result[1]} \n\n"
+                    f"{result[2]} \n\n"
+                    f"{result[3]} \n\n"
+                    f"{result[4]} \n\n"
+                    )
+                )  
 
 
         # If they're done, exit and return their list.
