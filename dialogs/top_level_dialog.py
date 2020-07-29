@@ -23,9 +23,9 @@ class TopLevelDialog(ComponentDialog):
         # Key name to store this dialogs state info in the StepContext
         self.USER_INFO = "value-userInfo"
 
+        # Declare Promts and Dialogs 
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(NumberPrompt(NumberPrompt.__name__))
-
         self.add_dialog(ReviewSelectionDialog(ReviewSelectionDialog.__name__))
 
         self.add_dialog(
@@ -47,7 +47,7 @@ class TopLevelDialog(ComponentDialog):
 
         # Ask the user to enter their name.
         prompt_options = PromptOptions(
-            prompt=MessageFactory.text("Hello whats your name?.")
+            prompt=MessageFactory.text("Hello, what's your name?")
         )
 
         return await step_context.prompt(TextPrompt.__name__, prompt_options)
@@ -80,7 +80,7 @@ class TopLevelDialog(ComponentDialog):
 
         # Thank them for participating.
         await step_context.context.send_activity(
-            MessageFactory.text(f"Thanks for participating, {user_profile.name.capitalize()}.")
+            MessageFactory.text(f"Bye {user_profile.name.capitalize()}, have a nice day.")
         )
 
         # Exit the dialog, returning the collected user information.
