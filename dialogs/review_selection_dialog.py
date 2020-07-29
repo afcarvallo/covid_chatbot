@@ -13,9 +13,11 @@ from botbuilder.core import CardFactory, MessageFactory
 
 from botbuilder.schema import (
     HeroCard,
+    ThumbnailCard,
     MediaUrl,
     Attachment,
     CardImage,
+    CardAction,
     Activity,
     ActionTypes,
     ActivityTypes
@@ -23,11 +25,10 @@ from botbuilder.schema import (
 
 
 ## tweepy authentication
-access_token = ""
-access_token_secret = ""
-consumer_key = ""
-consumer_secret = ""
-
+access_token = "153003474-CO4SaZ8H0NfShJ2iuZVZnn2ukxyhaIE0oUQTsWXu"
+access_token_secret = "sxJhJZnrcJNTIx8hz5Zguz16g5szkLXxuI68sC7DBvPrR"
+consumer_key = "Gqvnu2yKYFsxBiOlM6lx5GEfA"
+consumer_secret = "1T7axrJ7CvobNR6F2gjXBjFmZ61jkdg3Vjddm3E4ywUziiTDoZ"
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -38,8 +39,8 @@ api = tweepy.API(auth)
 url = "https://covid-193.p.rapidapi.com/statistics"
 
 headers = {
-    'x-rapidapi-host': "",
-    'x-rapidapi-key': ""
+     'x-rapidapi-host': "covid-193.p.rapidapi.com",
+     'x-rapidapi-key': "ff429794cdmsh07f4e03f81756efp1560b5jsnb34cb32bf306"
     }
 
 from typing import List
@@ -179,18 +180,9 @@ class ReviewSelectionDialog(ComponentDialog):
             query = f'{country} AND covid OR covid-19 OR coronavirus OR Covid-19'
 
             for tweet in tweepy.Cursor(api.search, q=query).items(5):
-                result.append(tweet.text)
-
-            await step_context.context.send_activity(
-                MessageFactory.text(
-                    f"COVID-19 Tweets from {country} \n\n"
-                    f"{result[0]} \n\n"
-                    f"{result[1]} \n\n"
-                    f"{result[2]} \n\n"
-                    f"{result[3]} \n\n"
-                    f"{result[4]} \n\n"
-                    )
-                )  
+                reply = MessageFactory.list([])
+                reply.attachments.append(self.create_tweet_card(tweet))
+                await step_context.context.send_activity(reply)
 
         if step_context.result.value == 'Covid-19 Meme':
             # show covid meme
@@ -204,7 +196,29 @@ class ReviewSelectionDialog(ComponentDialog):
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
         return await step_context.replace_dialog(ReviewSelectionDialog.__name__)
-    
+        
+    # CREATE TWEET CARD FUNCTION 
+    def create_tweet_card(self, tweet):
+        card = ThumbnailCard(
+            title=tweet.user.name,
+            subtitle="@"+tweet.user.screen_name,
+            text=tweet.text,
+            images=[
+                CardImage(
+                    url=tweet.user.profile_image_url
+                )
+            ]
+            # buttons=[
+            #     CardAction(
+            #         type=ActionTypes.open_url,
+            #         title="Open Tweet",
+            #         value=tweet.user.url,
+            #     )
+            # ]
+        )
+        
+        return CardFactory.thumbnail_card(card)
+
     # CREATE CARD FUNCTION 
     def create_hero_card(self):
         
