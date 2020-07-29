@@ -23,9 +23,9 @@ class TopLevelDialog(ComponentDialog):
         # Key name to store this dialogs state info in the StepContext
         self.USER_INFO = "value-userInfo"
 
+        # Declare Promts and Dialogs 
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(NumberPrompt(NumberPrompt.__name__))
-
         self.add_dialog(ReviewSelectionDialog(ReviewSelectionDialog.__name__))
 
         self.add_dialog(

@@ -6,13 +6,19 @@ import json
 import tweepy
 from collections import Counter 
 import random
+import os
+import base64
 
 from botbuilder.core import CardFactory, MessageFactory
 
 from botbuilder.schema import (
     HeroCard,
     MediaUrl,
+    Attachment,
     CardImage,
+    Activity,
+    ActionTypes,
+    ActivityTypes
 )
 
 
@@ -120,6 +126,11 @@ class ReviewSelectionDialog(ComponentDialog):
                     f"Recovered Cases {recovered_cases} \n\n"
                     )
                 )   
+            
+            reply = Activity(type=ActivityTypes.message)
+            reply.attachments = [self._get_inline_attachment(country)]
+            await step_context.context.send_activity(reply)
+
         
         if step_context.result.value == 'Covid-19 Deaths':
             await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
@@ -214,4 +225,27 @@ class ReviewSelectionDialog(ComponentDialog):
         )
         
         return CardFactory.hero_card(card)
+    
+    def _get_inline_attachment(self, country):
         
+        plot_country = ''
+
+        if country == 'Chile':
+            plot_country = 'chile'
+        
+        elif country == 'Pakistan':
+            plot_country = 'pakistan'
+        
+        else:
+            plot_country = 'usa'
+
+        file_path = os.path.join(os.getcwd(), f"images/{plot_country}_plot.png")
+        
+        with open(file_path, "rb") as in_file:
+            base64_image = base64.b64encode(in_file.read()).decode()
+
+        return Attachment(
+            name="chile_plot.png",
+            content_type="image/png",
+            content_url=f"data:image/png;base64,{base64_image}",
+        )
