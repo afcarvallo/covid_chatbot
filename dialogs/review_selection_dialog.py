@@ -6,8 +6,8 @@ import json
 import tweepy
 from collections import Counter 
 
-## tweepy 
-authenticationaccess_token = "153003474-CO4SaZ8H0NfShJ2iuZVZnn2ukxyhaIE0oUQTsWXu"
+## tweepy authentication
+access_token = "153003474-CO4SaZ8H0NfShJ2iuZVZnn2ukxyhaIE0oUQTsWXu"
 access_token_secret = "sxJhJZnrcJNTIx8hz5Zguz16g5szkLXxuI68sC7DBvPrR"
 consumer_key = "Gqvnu2yKYFsxBiOlM6lx5GEfA"
 consumer_secret = "1T7axrJ7CvobNR6F2gjXBjFmZ61jkdg3Vjddm3E4ywUziiTDoZ"
