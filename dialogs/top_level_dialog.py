@@ -11,7 +11,8 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, NumberPrompt
 
 from data_models import UserProfile
-from dialogs.review_selection_dialog import ReviewSelectionDialog
+# from dialogs.review_selection_dialog import ReviewSelectionDialog
+from dialogs.service_selection_dialog import ServiceSelectionDialog
 
 from botbuilder.schema import (AnimationCard, MediaUrl)
 
@@ -26,7 +27,7 @@ class TopLevelDialog(ComponentDialog):
         # Declare Promts and Dialogs 
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(NumberPrompt(NumberPrompt.__name__))
-        self.add_dialog(ReviewSelectionDialog(ReviewSelectionDialog.__name__))
+        self.add_dialog(ServiceSelectionDialog(ServiceSelectionDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -70,7 +71,7 @@ class TopLevelDialog(ComponentDialog):
         await step_context.context.send_activity(reply)
 
         # start the review selection dialog.
-        return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
+        return await step_context.begin_dialog(ServiceSelectionDialog.__name__)
 
     async def acknowledgement_step(self, step_context: WaterfallStepContext):
         

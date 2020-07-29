@@ -24,10 +24,10 @@ from botbuilder.schema import (
 )
 
 ## tweepy authentication
-access_token = ""
-access_token_secret = ""
-consumer_key = ""
-consumer_secret = ""
+access_token = "153003474-CO4SaZ8H0NfShJ2iuZVZnn2ukxyhaIE0oUQTsWXu"
+access_token_secret = "sxJhJZnrcJNTIx8hz5Zguz16g5szkLXxuI68sC7DBvPrR"
+consumer_key = "Gqvnu2yKYFsxBiOlM6lx5GEfA"
+consumer_secret = "1T7axrJ7CvobNR6F2gjXBjFmZ61jkdg3Vjddm3E4ywUziiTDoZ"
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -38,8 +38,8 @@ api = tweepy.API(auth)
 url = "https://covid-193.p.rapidapi.com/statistics"
 
 headers = {
-     'x-rapidapi-host': "",
-     'x-rapidapi-key': ""
+     'x-rapidapi-host': "covid-193.p.rapidapi.com",
+     'x-rapidapi-key': "ff429794cdmsh07f4e03f81756efp1560b5jsnb34cb32bf306"
     }
 
 from typing import List
@@ -55,10 +55,10 @@ from botbuilder.dialogs.choices import Choice, FoundChoice
 from botbuilder.core import MessageFactory
 
 
-class ReviewSelectionDialog(ComponentDialog):
+class SocialMediaSelectionDialog(ComponentDialog):
     def __init__(self, dialog_id: str = None, new_country = True):
 
-        super(ReviewSelectionDialog, self).__init__(dialog_id or ReviewSelectionDialog.__name__)
+        super(SocialMediaSelectionDialog, self).__init__(dialog_id or SocialMediaSelectionDialog.__name__)
 
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
 
@@ -68,7 +68,7 @@ class ReviewSelectionDialog(ComponentDialog):
             WaterfallDialog(
                 WaterfallDialog.__name__, [
                     self.country_step,
-                    self.selection_step, 
+                    self.selection_step,
                     self.loop_step]
             )
         )
@@ -76,7 +76,6 @@ class ReviewSelectionDialog(ComponentDialog):
         self.initial_dialog_id = WaterfallDialog.__name__
     
     async def country_step(self, step_context: WaterfallStepContext):
-        
         return await step_context.prompt(
             TextPrompt.__name__,
             PromptOptions(prompt=MessageFactory.text("What's your country?")),
@@ -92,11 +91,8 @@ class ReviewSelectionDialog(ComponentDialog):
         ChoicePrompt.__name__,
         PromptOptions(
             prompt=MessageFactory.text("Please indicate what do you want to know, or choose done to exit."),
-            choices=[Choice("Covid-19 Cases"), 
-                     Choice("Covid-19 Deaths"), 
-                     Choice("Covid-19 Tests"), 
-                     Choice('Covid-19 Twitter') ,
-                     Choice('Covid-19 Meme') ,
+            choices=[Choice('Covid-19 Twitter'),
+                     Choice('Covid-19 Meme'),
                      Choice("Done")],
         ),
     )
@@ -106,70 +102,6 @@ class ReviewSelectionDialog(ComponentDialog):
         country = step_context.values["country"].capitalize()
         
         # If they chose an option execute script
-        if step_context.result.value == 'Covid-19 Cases':
-
-            await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
-
-            querystring = {"country":"{}".format(country)}
-            response = requests.request("GET", url, headers=headers, params=querystring)
-            response_json = json.loads(response.text)
-
-            new_cases = response_json['response'][0]['cases']['new']
-            active_cases = response_json['response'][0]['cases']['active']
-            recovered_cases = response_json['response'][0]['cases']['recovered']
-
-            await step_context.context.send_activity(
-                MessageFactory.text(
-                    f"COVID-19 Cases from {country} \n\n"
-                    f"New Cases {new_cases} \n\n"
-                    f"Active Cases {active_cases} \n\n"
-                    f"Recovered Cases {recovered_cases} \n\n"
-                    )
-                )   
-            
-            reply = Activity(type=ActivityTypes.message)
-            reply.attachments = [self._get_inline_attachment(country)]
-            await step_context.context.send_activity(reply)
-
-        
-        if step_context.result.value == 'Covid-19 Deaths':
-            await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
-
-            querystring = {"country":"{}".format(country)}
-            response = requests.request("GET", url, headers=headers, params=querystring)
-            response_json = json.loads(response.text)
-
-            new_deaths = response_json['response'][0]['deaths']['new']
-            m_deaths = response_json['response'][0]['deaths']['1M_pop']
-            total_deaths = response_json['response'][0]['deaths']['total']
-
-            await step_context.context.send_activity(
-                MessageFactory.text(
-                    f"COVID-19 Deaths from {country} \n\n"
-                    f"New Deaths {new_deaths} \n\n"
-                    f"1M_pop Deaths {m_deaths} \n\n"
-                    f"Total Deaths {total_deaths} \n\n"
-                    )
-                )   
-        
-        if step_context.result.value == 'Covid-19 Tests':
-            await step_context.context.send_activity(MessageFactory.text("Wait a moment..."))
-
-            querystring = {"country":"{}".format(country)}
-            response = requests.request("GET", url, headers=headers, params=querystring)
-            response_json = json.loads(response.text)
-
-            m_tests = response_json['response'][0]['tests']['1M_pop']
-            total_tests = response_json['response'][0]['tests']['total']
-
-            await step_context.context.send_activity(
-                MessageFactory.text(
-                    f"COVID-19 PCR Tests from {country} \n\n"
-                    f"New Tests {m_tests} \n\n"
-                    f"Total PCR Tests {total_tests} \n\n"
-                    )
-                )  
-
         if step_context.result.value == 'Covid-19 Twitter':
             
             await step_context.context.send_activity(MessageFactory.text("Obtaining last tweets in your country related to COVID-19 wait a moment..."))
@@ -194,7 +126,7 @@ class ReviewSelectionDialog(ComponentDialog):
             return await step_context.end_dialog()
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
-        return await step_context.replace_dialog(ReviewSelectionDialog.__name__)
+        return await step_context.replace_dialog(SocialMediaSelectionDialog.__name__)
         
     # CREATE TWEET CARD FUNCTION 
     def create_tweet_card(self, tweet):
@@ -207,13 +139,6 @@ class ReviewSelectionDialog(ComponentDialog):
                     url=tweet.user.profile_image_url
                 )
             ]
-            # buttons=[
-            #     CardAction(
-            #         type=ActionTypes.open_url,
-            #         title="Open Tweet",
-            #         value=tweet.user.url,
-            #     )
-            # ]
         )
         
         return CardFactory.thumbnail_card(card)

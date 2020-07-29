@@ -13,7 +13,6 @@ from botbuilder.core import CardFactory, MessageFactory
 
 from botbuilder.schema import (
     HeroCard,
-    ThumbnailCard,
     MediaUrl,
     Attachment,
     CardImage,
@@ -23,23 +22,12 @@ from botbuilder.schema import (
     ActivityTypes
 )
 
-## tweepy authentication
-access_token = ""
-access_token_secret = ""
-consumer_key = ""
-consumer_secret = ""
-
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-
-api = tweepy.API(auth)
-
 # ENDPOINT COVID 
 url = "https://covid-193.p.rapidapi.com/statistics"
 
 headers = {
-     'x-rapidapi-host': "",
-     'x-rapidapi-key': ""
+     'x-rapidapi-host': "covid-193.p.rapidapi.com",
+     'x-rapidapi-key': "ff429794cdmsh07f4e03f81756efp1560b5jsnb34cb32bf306"
     }
 
 from typing import List
@@ -55,10 +43,10 @@ from botbuilder.dialogs.choices import Choice, FoundChoice
 from botbuilder.core import MessageFactory
 
 
-class ReviewSelectionDialog(ComponentDialog):
+class StatsSelectionDialog(ComponentDialog):
     def __init__(self, dialog_id: str = None, new_country = True):
 
-        super(ReviewSelectionDialog, self).__init__(dialog_id or ReviewSelectionDialog.__name__)
+        super(StatsSelectionDialog, self).__init__(dialog_id or StatsSelectionDialog.__name__)
 
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
 
@@ -94,9 +82,7 @@ class ReviewSelectionDialog(ComponentDialog):
             prompt=MessageFactory.text("Please indicate what do you want to know, or choose done to exit."),
             choices=[Choice("Covid-19 Cases"), 
                      Choice("Covid-19 Deaths"), 
-                     Choice("Covid-19 Tests"), 
-                     Choice('Covid-19 Twitter') ,
-                     Choice('Covid-19 Meme') ,
+                     Choice("Covid-19 Tests"),
                      Choice("Done")],
         ),
     )
@@ -170,56 +156,15 @@ class ReviewSelectionDialog(ComponentDialog):
                     )
                 )  
 
-        if step_context.result.value == 'Covid-19 Twitter':
-            
-            await step_context.context.send_activity(MessageFactory.text("Obtaining last tweets in your country related to COVID-19 wait a moment..."))
-
-            result = []
-
-            query = f'{country} AND covid OR covid-19 OR coronavirus OR Covid-19'
-
-            for tweet in tweepy.Cursor(api.search, q=query).items(5):
-                reply = MessageFactory.list([])
-                reply.attachments.append(self.create_tweet_card(tweet))
-                await step_context.context.send_activity(reply)
-
-        if step_context.result.value == 'Covid-19 Meme':
-            # show covid meme
-            reply = MessageFactory.list([])
-            reply.attachments.append(self.create_hero_card())
-            await step_context.context.send_activity(reply)
-
         # If they're done, exit and return their list.
         elif step_context.result.value == 'Done':
             return await step_context.end_dialog()
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
-        return await step_context.replace_dialog(ReviewSelectionDialog.__name__)
+        return await step_context.replace_dialog(StatsSelectionDialog.__name__)
         
-    # CREATE TWEET CARD FUNCTION 
-    def create_tweet_card(self, tweet):
-        card = ThumbnailCard(
-            title=tweet.user.name,
-            subtitle="@"+tweet.user.screen_name,
-            text=tweet.text,
-            images=[
-                CardImage(
-                    url=tweet.user.profile_image_url
-                )
-            ]
-            # buttons=[
-            #     CardAction(
-            #         type=ActionTypes.open_url,
-            #         title="Open Tweet",
-            #         value=tweet.user.url,
-            #     )
-            # ]
-        )
-        
-        return CardFactory.thumbnail_card(card)
-
     # CREATE CARD FUNCTION 
-    def create_hero_card(self):
+    def HeroCard(self):
         
         memes_list = ['https://images3.memedroid.com/images/UPLOADED826/5e6ea59356326.jpeg',
                     'https://i.pinimg.com/originals/8c/04/87/8c04877aad35b1b0dad8376f7899d878.png',
