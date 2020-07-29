@@ -100,6 +100,15 @@ class ServiceSelectionDialog(ComponentDialog):
                 MessageFactory.text(f"Welcome to the Covid-19 Places Portal")
             )
 
+            # show covid meme
+            reply = MessageFactory.list([])
+            reply.attachments.append(self.create_poi_card())
+            await step_context.context.send_activity(reply)
+            
+
+            
+
+
         # If they're done, exit and return their list.
         elif step_context.result.value == 'Done':
             return await step_context.end_dialog()
@@ -130,6 +139,27 @@ class ServiceSelectionDialog(ComponentDialog):
             ],
         )
         return CardFactory.thumbnail_card(card)
+    
+    def create_poi_card(self):
+        card = ThumbnailCard(
+            title="Seattle POI",
+            subtitle="COVID-19 Open Places",
+            text="The COVID-19 affected many Places of Interest, here is an updated map ",
+            images=[
+                CardImage(
+                    url="https://www.google.com/maps/d/thumbnail?mid=1bwwdAoQe6Hoq6LFIhld3ZL7-JLg&hl=en"
+                )
+            ],
+            buttons=[
+                CardAction(
+                    type=ActionTypes.open_url,
+                    title="Access Map",
+                    value="https://www.google.com/maps/place/Seattle,+Washington,+EE.+UU./@47.6129432,-122.4821475,11z/data=!3m1!4b1!4m5!3m4!1s0x5490102c93e83355:0x102565466944d59a!8m2!3d47.6062095!4d-122.3320708",
+                )
+            ],
+        )
+        return CardFactory.thumbnail_card(card)
+    
 
 
           
