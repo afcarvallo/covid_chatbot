@@ -6,11 +6,12 @@ import json
 import tweepy
 from collections import Counter 
 
-## tweepy authentication
-access_token = ""
-access_token_secret = ""
-consumer_key = ""
-consumer_secret = ""
+## tweepy 
+authenticationaccess_token = "153003474-CO4SaZ8H0NfShJ2iuZVZnn2ukxyhaIE0oUQTsWXu"
+access_token_secret = "sxJhJZnrcJNTIx8hz5Zguz16g5szkLXxuI68sC7DBvPrR"
+consumer_key = "Gqvnu2yKYFsxBiOlM6lx5GEfA"
+consumer_secret = "1T7axrJ7CvobNR6F2gjXBjFmZ61jkdg3Vjddm3E4ywUziiTDoZ"
+
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -20,13 +21,10 @@ api = tweepy.API(auth)
 # ENDPOINT COVID 
 url = "https://covid-193.p.rapidapi.com/statistics"
 
-
-
 headers = {
-    'x-rapidapi-host': "",
-    'x-rapidapi-key': ""
+    'x-rapidapi-host': "covid-193.p.rapidapi.com",
+    'x-rapidapi-key': "ff429794cdmsh07f4e03f81756efp1560b5jsnb34cb32bf306"
     }
-
 
 from typing import List
 
