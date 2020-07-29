@@ -170,7 +170,7 @@ class ReviewSelectionDialog(ComponentDialog):
 
 
         # If they're done, exit and return their list.
-        if step_context.result.value == 'Done':
+        elif step_context.result.value == 'Done':
             return await step_context.end_dialog()
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.

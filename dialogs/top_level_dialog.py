@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
-from botbuilder.core import MessageFactory
+from botbuilder.core import MessageFactory, CardFactory
 from botbuilder.dialogs import (
     WaterfallDialog,
     DialogTurnResult,
@@ -12,6 +12,8 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, NumberPrompt
 
 from data_models import UserProfile
 from dialogs.review_selection_dialog import ReviewSelectionDialog
+
+from botbuilder.schema import (AnimationCard, MediaUrl)
 
 
 class TopLevelDialog(ComponentDialog):
@@ -49,6 +51,7 @@ class TopLevelDialog(ComponentDialog):
         )
 
         return await step_context.prompt(TextPrompt.__name__, prompt_options)
+    
 
     async def start_selection_step(self, step_context: WaterfallStepContext):
 
@@ -60,6 +63,11 @@ class TopLevelDialog(ComponentDialog):
         await step_context.context.send_activity(
             MessageFactory.text(f"Nice to e-meet you {step_context.result.capitalize()}")
         )
+
+        # show covid card
+        reply = MessageFactory.list([])
+        reply.attachments.append(self.create_animation_card())
+        await step_context.context.send_activity(reply)
 
         # start the review selection dialog.
         return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
@@ -77,3 +85,13 @@ class TopLevelDialog(ComponentDialog):
 
         # Exit the dialog, returning the collected user information.
         return await step_context.end_dialog(user_profile)
+    
+    # CREATE CARD FUNCTION 
+    def create_animation_card(self):
+        card = AnimationCard(
+            media=[MediaUrl(url="https://media4.s-nbcnews.com/j/newscms/2020_26/3392002/antimicrobial-face-masks-kr-2x1-tease-200623_2597ed8310508184ab2a3fdba151fded.fit-1240w.gif")],
+            title="Learn how to use your mask :)",
+            subtitle="For your protection against COVID-19",
+        )
+        return CardFactory.animation_card(card)
+
