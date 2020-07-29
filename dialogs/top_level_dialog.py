@@ -47,7 +47,7 @@ class TopLevelDialog(ComponentDialog):
 
         # Ask the user to enter their name.
         prompt_options = PromptOptions(
-            prompt=MessageFactory.text("Hello whats your name?.")
+            prompt=MessageFactory.text("Hello, what's your name?")
         )
 
         return await step_context.prompt(TextPrompt.__name__, prompt_options)
