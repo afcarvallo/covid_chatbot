@@ -80,7 +80,7 @@ class TopLevelDialog(ComponentDialog):
 
         # Thank them for participating.
         await step_context.context.send_activity(
-            MessageFactory.text(f"Thanks for participating, {user_profile.name.capitalize()}.")
+            MessageFactory.text(f"Bye {user_profile.name.capitalize()}, have a nice day.")
         )
 
         # Exit the dialog, returning the collected user information.
