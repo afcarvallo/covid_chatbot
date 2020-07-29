@@ -5,6 +5,16 @@ import requests
 import json
 import tweepy
 from collections import Counter 
+import random
+
+from botbuilder.core import CardFactory, MessageFactory
+
+from botbuilder.schema import (
+    HeroCard,
+    MediaUrl,
+    CardImage,
+)
+
 
 ## tweepy authentication
 access_token = ""
@@ -76,7 +86,12 @@ class ReviewSelectionDialog(ComponentDialog):
         ChoicePrompt.__name__,
         PromptOptions(
             prompt=MessageFactory.text("Please indicate what do you want to know, or choose done to exit."),
-            choices=[Choice("Covid-19 Cases"), Choice("Covid-19 Deaths"), Choice("Covid-19 Tests"), Choice('Covid-19 Twitter') ,Choice("Done")],
+            choices=[Choice("Covid-19 Cases"), 
+                     Choice("Covid-19 Deaths"), 
+                     Choice("Covid-19 Tests"), 
+                     Choice('Covid-19 Twitter') ,
+                     Choice('Covid-19 Meme') ,
+                     Choice("Done")],
         ),
     )
        
@@ -166,6 +181,11 @@ class ReviewSelectionDialog(ComponentDialog):
                     )
                 )  
 
+        if step_context.result.value == 'Covid-19 Meme':
+            # show covid meme
+            reply = MessageFactory.list([])
+            reply.attachments.append(self.create_hero_card())
+            await step_context.context.send_activity(reply)
 
         # If they're done, exit and return their list.
         elif step_context.result.value == 'Done':
@@ -173,3 +193,25 @@ class ReviewSelectionDialog(ComponentDialog):
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
         return await step_context.replace_dialog(ReviewSelectionDialog.__name__)
+    
+    # CREATE CARD FUNCTION 
+    def create_hero_card(self):
+        
+        memes_list = ['https://images3.memedroid.com/images/UPLOADED826/5e6ea59356326.jpeg',
+                    'https://i.pinimg.com/originals/8c/04/87/8c04877aad35b1b0dad8376f7899d878.png',
+                    'https://starecat.com/content/wp-content/uploads/im-no-expert-on-covid-19-but-this-is-the-cure-literally-band.jpg',
+                    'https://images3.memedroid.com/images/UPLOADED86/5e2cc3aeec5c0.jpeg',
+                    
+        ]
+
+        card = HeroCard(
+            title="",
+            images=[
+                CardImage(
+                    url=random.choice(memes_list)
+                )
+            ]
+        )
+        
+        return CardFactory.hero_card(card)
+        
