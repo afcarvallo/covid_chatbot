@@ -13,14 +13,14 @@ from botbuilder.core import CardFactory, MessageFactory
 
 from botbuilder.schema import (
     HeroCard,
-    ThumbnailCard,
     MediaUrl,
     Attachment,
     CardImage,
-    CardAction,
     Activity,
     ActionTypes,
-    ActivityTypes
+    ActivityTypes, 
+    ThumbnailCard, 
+    CardAction
 )
 
 
@@ -29,6 +29,7 @@ access_token = ""
 access_token_secret = ""
 consumer_key = ""
 consumer_secret = ""
+
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -39,8 +40,8 @@ api = tweepy.API(auth)
 url = "https://covid-193.p.rapidapi.com/statistics"
 
 headers = {
-     'x-rapidapi-host': "",
-     'x-rapidapi-key': ""
+    'x-rapidapi-host': "",
+    'x-rapidapi-key': ""
     }
 
 from typing import List
@@ -98,6 +99,7 @@ class ReviewSelectionDialog(ComponentDialog):
                      Choice("Covid-19 Tests"), 
                      Choice('Covid-19 Twitter') ,
                      Choice('Covid-19 Meme') ,
+                     Choice('Covid-19 Donation'), 
                      Choice("Done")],
         ),
     )
@@ -180,15 +182,31 @@ class ReviewSelectionDialog(ComponentDialog):
             query = f'{country} AND covid OR covid-19 OR coronavirus OR Covid-19'
 
             for tweet in tweepy.Cursor(api.search, q=query).items(5):
-                reply = MessageFactory.list([])
-                reply.attachments.append(self.create_tweet_card(tweet))
-                await step_context.context.send_activity(reply)
+                result.append(tweet.text)
+
+            await step_context.context.send_activity(
+                MessageFactory.text(
+                    f"COVID-19 Tweets from {country} \n\n"
+                    f"{result[0]} \n\n"
+                    f"{result[1]} \n\n"
+                    f"{result[2]} \n\n"
+                    f"{result[3]} \n\n"
+                    f"{result[4]} \n\n"
+                    )
+                )  
 
         if step_context.result.value == 'Covid-19 Meme':
             # show covid meme
             reply = MessageFactory.list([])
             reply.attachments.append(self.create_hero_card())
             await step_context.context.send_activity(reply)
+        
+        if step_context.result.value == 'Covid-19 Donation':
+            # show covid meme
+            reply = MessageFactory.list([])
+            reply.attachments.append(self.create_thumbnail_card())
+            await step_context.context.send_activity(reply)
+        
 
         # If they're done, exit and return their list.
         elif step_context.result.value == 'Done':
@@ -196,29 +214,7 @@ class ReviewSelectionDialog(ComponentDialog):
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
         return await step_context.replace_dialog(ReviewSelectionDialog.__name__)
-        
-    # CREATE TWEET CARD FUNCTION 
-    def create_tweet_card(self, tweet):
-        card = ThumbnailCard(
-            title=tweet.user.name,
-            subtitle="@"+tweet.user.screen_name,
-            text=tweet.text,
-            images=[
-                CardImage(
-                    url=tweet.user.profile_image_url
-                )
-            ]
-            # buttons=[
-            #     CardAction(
-            #         type=ActionTypes.open_url,
-            #         title="Open Tweet",
-            #         value=tweet.user.url,
-            #     )
-            # ]
-        )
-        
-        return CardFactory.thumbnail_card(card)
-
+    
     # CREATE CARD FUNCTION 
     def create_hero_card(self):
         
@@ -239,6 +235,27 @@ class ReviewSelectionDialog(ComponentDialog):
         )
         
         return CardFactory.hero_card(card)
+    
+    def create_thumbnail_card(self):
+        card = ThumbnailCard(
+            title="Seattle Foundation",
+            subtitle="COVID-19 Response Fund",
+            text="The COVID-19 Response Fund deploys resources to organizations supporting local "
+            " workers and families most impacted by the coronavirus crisis.",
+            images=[
+                CardImage(
+                    url="https://www.seattlefoundation.org/-/media/SeaFdn/Images/Common/sf_logo.gif"
+                )
+            ],
+            buttons=[
+                CardAction(
+                    type=ActionTypes.open_url,
+                    title="Make a donation",
+                    value="https://www.seattlefoundation.org/communityimpact/civic-leadership/covid-19-response-fund",
+                )
+            ],
+        )
+        return CardFactory.thumbnail_card(card)
     
     def _get_inline_attachment(self, country):
         
