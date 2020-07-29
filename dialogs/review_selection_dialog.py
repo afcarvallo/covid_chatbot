@@ -12,6 +12,7 @@ access_token_secret = ""
 consumer_key = ""
 consumer_secret = ""
 
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
@@ -20,13 +21,10 @@ api = tweepy.API(auth)
 # ENDPOINT COVID 
 url = "https://covid-193.p.rapidapi.com/statistics"
 
-
-
 headers = {
     'x-rapidapi-host': "",
     'x-rapidapi-key': ""
     }
-
 
 from typing import List
 
@@ -170,7 +168,7 @@ class ReviewSelectionDialog(ComponentDialog):
 
 
         # If they're done, exit and return their list.
-        if step_context.result.value == 'Done':
+        elif step_context.result.value == 'Done':
             return await step_context.end_dialog()
 
         # Otherwise, repeat this dialog, passing in the selections from this iteration.
