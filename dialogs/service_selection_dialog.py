@@ -25,6 +25,8 @@ from botbuilder.core import MessageFactory, CardFactory
 
 from dialogs.stats_selection_dialog import StatsSelectionDialog
 from dialogs.social_media_selection_dialog import SocialMediaSelectionDialog
+from dialogs.healthcare_selection_dialog import HealthSelectionDialog
+
 
 class ServiceSelectionDialog(ComponentDialog):
     def __init__(self, dialog_id: str = None):
@@ -79,6 +81,10 @@ class ServiceSelectionDialog(ComponentDialog):
             await step_context.context.send_activity(
                 MessageFactory.text(f"Welcome to the Covid-19 Health Portal")
             )
+            self.add_dialog(HealthSelectionDialog(HealthSelectionDialog.__name__))
+            
+            return await step_context.begin_dialog(HealthSelectionDialog.__name__)
+
 
         if step_context.result.value == 'Covid-19 Donation':
             await step_context.context.send_activity(
