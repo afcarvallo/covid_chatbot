@@ -26,8 +26,8 @@ from botbuilder.schema import (
 url = "https://covid-193.p.rapidapi.com/statistics"
 
 headers = {
-     'x-rapidapi-host': "covid-193.p.rapidapi.com",
-     'x-rapidapi-key': "ff429794cdmsh07f4e03f81756efp1560b5jsnb34cb32bf306"
+     'x-rapidapi-host': "",
+     'x-rapidapi-key': ""
     }
 
 from typing import List
